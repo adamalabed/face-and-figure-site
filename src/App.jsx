@@ -289,7 +289,7 @@ const HomeView = ({ setView, onQuickBook }) => {
             
             <div className="pt-4 flex items-center gap-6">
                <div className="h-16 w-16 bg-gray-100 rounded-sm overflow-hidden">
-                 <img src="https://images.unsplash.com/photo-1629425733761-caae3b5f2e50?auto=format&fit=crop&q=80&w=200" className="w-full h-full object-cover grayscale" alt="Dr" />
+                 <img src="https://i.ibb.co/4nkDtfVf/IMG-0174.jpg" className="w-full h-full object-cover grayscale" alt="Dr" />
                </div>
                <div>
                  <p className="text-black font-medium text-sm uppercase tracking-widest">Dr. Irina Votyakova</p>
@@ -734,4 +734,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default App;npm run dev
