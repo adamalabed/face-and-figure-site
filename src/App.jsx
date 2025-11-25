@@ -226,9 +226,9 @@ const Navigation = ({ currentView, setView, onQuickBook }) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 top-[80px] bg-white z-40 flex flex-col items-center justify-center pb-20"
+              className="fixed inset-0 top-[80px] bg-white z-40 flex flex-col items-center justify-between pb-10 overflow-y-auto"
             >
-              <div className="flex flex-col items-center space-y-10">
+              <div className="flex flex-col items-center justify-center flex-grow space-y-10 py-10">
                 <button 
                   onClick={() => handleNav('home')}
                   className="text-3xl font-light uppercase tracking-[0.25em] text-black hover:text-gray-500 transition-colors"
@@ -250,7 +250,7 @@ const Navigation = ({ currentView, setView, onQuickBook }) => {
               </div>
 
               {/* Footer Info in Menu */}
-              <div className="absolute bottom-10 left-0 w-full text-center">
+              <div className="w-full text-center shrink-0">
                  <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-3">Beirut • Saida</p>
                  <div className="flex justify-center gap-6 text-[10px] uppercase tracking-widest text-gray-300">
                     <span>Instagram</span>
