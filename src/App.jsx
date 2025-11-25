@@ -141,17 +141,18 @@ const Section = ({ label, children, className = "", id = "" }) => (
     <div className="max-w-[1400px] mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
       {label !== null && (
         <div className="md:col-span-3 lg:col-span-3 relative">
-          {/* Mobile Sticky Label - Pinned to top on mobile */}
-          <div className="md:hidden sticky top-20 z-30 bg-white/95 backdrop-blur-sm py-3 -mx-6 px-6 border-b border-gray-50 mb-6">
-            {/* UPDATED: Changed text-gray-900 to text-gray-400 and removed font-semibold to match desktop style */}
+          {/* Mobile Sticky Label - Pinned to top on mobile with gradient */}
+          <div className="md:hidden sticky top-20 z-30 bg-gradient-to-b from-white via-white/95 to-white/80 backdrop-blur-sm py-4 -mx-6 px-6 mb-6">
             <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400">
               {label}
             </span>
           </div>
-          {/* Desktop Sticky Label */}
-          <span className="hidden md:block text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-gray-400 sticky top-32">
-            {label}
-          </span>
+          {/* Desktop Sticky Label - Updated to be pinned immediately below header (top-24) */}
+          <div className="hidden md:block sticky top-24">
+             <span className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-gray-400">
+               {label}
+             </span>
+          </div>
         </div>
       )}
       <div className={`${label !== null ? 'md:col-span-9 lg:col-span-8' : 'md:col-span-12'}`}>
@@ -190,7 +191,8 @@ const Navigation = ({ currentView, setView, onNavBook, onMenuBook }) => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-50 transition-all">
+    // Updated Header with Gradient Transparency
+    <nav className="fixed top-0 left-0 right-0 w-full z-50 bg-gradient-to-b from-white via-white/90 to-white/0 backdrop-blur-sm transition-all">
       <div className="max-w-[1400px] mx-auto px-6 h-20 flex justify-between items-center relative z-50">
         
         {/* Left: Logo */}
@@ -239,7 +241,7 @@ const Navigation = ({ currentView, setView, onNavBook, onMenuBook }) => {
         </div>
       </div>
 
-      {/* Mobile Menu Overlay - Rendered as direct child of nav to avoid positioning conflicts */}
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div 
@@ -252,14 +254,12 @@ const Navigation = ({ currentView, setView, onNavBook, onMenuBook }) => {
             <div className="flex flex-col items-center justify-center flex-grow space-y-10 py-10">
               <button 
                 onClick={() => handleNav('home')}
-                // UPDATED: Removed font-medium from active state to keep the lightweight style consistent
                 className={`text-3xl font-light uppercase tracking-[0.25em] hover:text-gray-500 transition-colors ${currentView === 'home' ? 'text-black' : 'text-gray-400'}`}
               >
                 Home
               </button>
               <button 
                 onClick={() => handleNav('services')}
-                // UPDATED: Removed font-medium from active state
                 className={`text-3xl font-light uppercase tracking-[0.25em] hover:text-gray-500 transition-colors ${currentView === 'services' ? 'text-black' : 'text-gray-400'}`}
               >
                 Treatments
@@ -272,7 +272,6 @@ const Navigation = ({ currentView, setView, onNavBook, onMenuBook }) => {
               </button>
             </div>
 
-            {/* Footer Info in Menu */}
             <div className="w-full text-center shrink-0">
                 <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-3">Beirut • Saida</p>
                 <div className="flex justify-center gap-6 text-[10px] uppercase tracking-widest text-gray-300">
@@ -513,8 +512,8 @@ const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }
         <div className="space-y-16 mt-8 md:mt-0">
           {filteredCategories.map((category) => (
             <div key={category.id}>
-              {/* UPDATED: Added sticky positioning classes */}
-              <h3 className="sticky top-32 md:top-20 z-10 bg-white/95 backdrop-blur-sm py-4 mb-6 border-b border-gray-100 text-xs uppercase tracking-widest text-gray-400">
+              {/* UPDATED: Gradient background, sticky positioning on both mobile and desktop (top-20) */}
+              <h3 className="sticky top-20 md:top-24 z-10 bg-gradient-to-b from-white via-white/95 to-white/80 backdrop-blur-sm py-4 mb-6 border-b border-gray-100 text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-gray-400">
                 {category.name}
               </h3>
               <div>
