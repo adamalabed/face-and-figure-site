@@ -169,13 +169,13 @@ const Navigation = ({ currentView, setView, onQuickBook }) => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 w-full z-50 bg-gradient-to-b from-white via-white/80 to-transparent pb-8 transition-all">
+    <nav className="fixed top-0 left-0 right-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-50 transition-all">
       {/* Added 'items-center' to ensure vertical alignment of all flex children */}
-      <div className="max-w-[1400px] mx-auto px-6 py-5 flex justify-between items-center h-20 relative">
+      <div className="max-w-[1400px] mx-auto px-6 h-20 flex justify-between items-center relative">
         
         {/* Left: Logo */}
         <div 
-          className="text-sm font-semibold tracking-widest uppercase cursor-pointer hover:opacity-70 transition-opacity flex items-center gap-2 z-10 h-full"
+          className="text-sm font-semibold tracking-widest uppercase cursor-pointer hover:opacity-70 transition-opacity flex items-center gap-2 z-50 h-full"
           onClick={() => handleNav('home')}
         >
           Face & Figure <span className="hidden sm:inline text-[10px] font-light tracking-normal normal-case text-gray-500">by Irina Votyakova</span>
@@ -204,7 +204,7 @@ const Navigation = ({ currentView, setView, onQuickBook }) => {
         </div>
 
         {/* Right: Action & Mobile Toggle */}
-        <div className="flex items-center gap-4 z-10 h-full">
+        <div className="flex items-center gap-4 z-50 h-full">
           <button 
             onClick={onQuickBook}
             className="bg-black text-white px-6 py-2.5 text-[10px] uppercase tracking-widest hover:bg-gray-800 transition-colors"
@@ -213,24 +213,50 @@ const Navigation = ({ currentView, setView, onQuickBook }) => {
           </button>
 
           {/* Mobile Menu Icon */}
-          <button className="md:hidden text-black flex items-center" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            {mobileMenuOpen ? <CloseIcon size={20} /> : <Menu size={20} />}
+          <button className="md:hidden text-black flex items-center p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? <CloseIcon size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
-        {/* Mobile Menu Overlay - Full Screen Style */}
+        {/* Mobile Menu Overlay - Updated Style */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div 
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="absolute top-full left-0 w-full h-screen bg-white border-t border-gray-100 flex flex-col items-center pt-20 space-y-8 text-sm font-medium tracking-[0.2em] uppercase"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 top-[80px] bg-white z-40 flex flex-col items-center justify-center pb-20"
             >
-              <button onClick={() => handleNav('home')}>Home</button>
-              <button onClick={() => handleNav('services')}>Treatments</button>
-              <button onClick={() => handleNav(currentView, 'contact')}>Contact</button>
-              <button onClick={() => { setMobileMenuOpen(false); onQuickBook(); }} className="text-black font-bold border-b border-black pb-1">Book Appointment</button>
+              <div className="flex flex-col items-center space-y-10">
+                <button 
+                  onClick={() => handleNav('home')}
+                  className="text-3xl font-light uppercase tracking-[0.25em] text-black hover:text-gray-500 transition-colors"
+                >
+                  Home
+                </button>
+                <button 
+                  onClick={() => handleNav('services')}
+                  className="text-3xl font-light uppercase tracking-[0.25em] text-black hover:text-gray-500 transition-colors"
+                >
+                  Treatments
+                </button>
+                <button 
+                  onClick={() => handleNav(currentView, 'contact')}
+                  className="text-3xl font-light uppercase tracking-[0.25em] text-black hover:text-gray-500 transition-colors"
+                >
+                  Contact
+                </button>
+              </div>
+
+              {/* Footer Info in Menu */}
+              <div className="absolute bottom-10 left-0 w-full text-center">
+                 <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-3">Beirut • Saida</p>
+                 <div className="flex justify-center gap-6 text-[10px] uppercase tracking-widest text-gray-300">
+                    <span>Instagram</span>
+                    <span>Maps</span>
+                 </div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
