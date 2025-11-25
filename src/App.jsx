@@ -287,9 +287,10 @@ const HomeView = ({ setView, onQuickBook }) => {
               Under the direction of Dr. Irina Votyakova, we specialize in full-face harmonization and advanced injectable techniques. With over 15 years of experience in clinical dermatology, Dr. Votyakova is renowned for her "invisible touch," ensuring every patient leaves looking refreshed, not done.
             </p>
             
-            <div className="pt-4 flex items-center gap-6">
-               <div className="h-16 w-16 bg-gray-100 rounded-sm overflow-hidden">
-                 <img src="https://i.ibb.co/4nkDtfVf/IMG-0174.jpg" className="w-full h-full object-cover grayscale" alt="Dr" />
+            <div className="pt-4 flex items-start gap-8">
+               <div className="h-32 w-32 bg-gray-100 overflow-hidden">
+                 {/* Added 'object-[50%_30%]' to shift the image focus higher up */}
+                 <img src="https://i.ibb.co/4nkDtfVf/IMG-0174.jpg" className="w-full h-full object-cover object-[50%_30%] grayscale" alt="Dr" />
                </div>
                <div>
                  <p className="text-black font-medium text-sm uppercase tracking-widest">Dr. Irina Votyakova</p>
@@ -317,8 +318,8 @@ const HomeView = ({ setView, onQuickBook }) => {
                   onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/800x600/f0f0f0/cccccc?text=Image+Loading..." }} // Fallback
                 />
               </div>
-              {/* Added min-h-[3.5rem] to align titles and subsequent descriptions */}
-              <h3 className="text-lg font-normal text-black mb-2 min-h-[3.5rem]">{item.title}</h3>
+              {/* Removed min-h-[3.5rem] to fix large gap between title and description */}
+              <h3 className="text-lg font-normal text-black mb-2">{item.title}</h3>
               {/* UPDATED: Changed text-gray-500 to text-gray-600 for better contrast */}
               <p className="text-xs text-gray-600 font-medium leading-relaxed max-w-xs text-left">
                 {item.desc}
@@ -338,10 +339,11 @@ const HomeView = ({ setView, onQuickBook }) => {
                 <ArrowRight size={18} />
               </div>
             </div>
-            <h3 className="text-lg font-normal text-black mb-2 min-h-[3.5rem]">All Services</h3>
-            {/* UPDATED: Changed text-gray-500 to text-gray-600 */}
+            {/* Removed min-h-[3.5rem] here as well */}
+            <h3 className="text-lg font-normal text-black mb-2">All Services</h3>
+            {/* UPDATED: Shortened description */}
             <p className="text-xs text-gray-600 font-medium leading-relaxed max-w-xs text-left">
-              Explore our comprehensive range of medical aesthetic procedures.
+              Full menu of treatments.
             </p>
           </div>
         </div>
@@ -653,22 +655,46 @@ const Footer = ({ onQuickBook, hideBookingCTA }) => {
             <div className="text-sm font-light text-gray-600 space-y-1">
               <p>City Medical Center, 3rd Floor</p>
               <p>East Blvd, Saida, Lebanon</p>
-              <p className="mt-4 text-black">+961 767 33 55 8</p>
+              {/* Phone number removed from here to highlight it as a button below */}
             </div>
           </div>
           
           <div className="md:col-span-9">
-            {!hideBookingCTA && (
-              <button 
-                onClick={onQuickBook}
-                className="group block text-left w-full"
-              >
-                <h2 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-tight leading-none text-black group-hover:text-gray-500 transition-colors uppercase break-words"
-                    style={{ lineHeight: '0.9' }} // Tighten line height for optical alignment
+            {!hideBookingCTA ? (
+              <div className="flex flex-col items-start gap-8">
+                <button 
+                  onClick={onQuickBook}
+                  className="group block text-left w-full"
                 >
-                  BOOK APPOINTMENT <span className="text-2xl align-top text-black group-hover:text-gray-500 relative top-1 md:top-2">↗</span>
+                  <h2 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-tight leading-none text-black group-hover:text-gray-500 transition-colors uppercase break-words"
+                      style={{ lineHeight: '0.9' }}
+                  >
+                    BOOK APPOINTMENT <span className="text-2xl align-top text-black group-hover:text-gray-500 relative top-1 md:top-2">↗</span>
+                  </h2>
+                </button>
+
+                {/* Secondary CTA: Phone Number */}
+                <a 
+                   href="tel:+96176733558"
+                   className="inline-flex items-center gap-3 px-8 py-4 border border-black text-xs md:text-sm uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-all duration-300"
+                >
+                   <Phone size={16} />
+                   <span>+961 76 733 558</span>
+                </a>
+              </div>
+            ) : (
+              <div className="flex flex-col items-start gap-6">
+                <h2 className="text-3xl md:text-4xl font-light tracking-tight text-black">
+                  Questions?
                 </h2>
-              </button>
+                <a 
+                   href="tel:+96176733558"
+                   className="inline-flex items-center gap-3 px-8 py-4 border border-black text-xs md:text-sm uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-all duration-300"
+                >
+                   <Phone size={16} />
+                   <span>Call +961 76 733 558</span>
+                </a>
+              </div>
             )}
             
             <div className="mt-12 md:mt-16 flex justify-between items-end">
@@ -734,4 +760,4 @@ const App = () => {
   );
 };
 
-export default App;npm run dev
+export default App;
