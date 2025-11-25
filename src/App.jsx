@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowRight, ArrowUpRight, Clock, MapPin, Phone, Instagram, Facebook, 
-  Menu, X as CloseIcon, Check, Plus, Calendar as CalendarIcon
+  Menu, X as CloseIcon, Check, Plus, Calendar as CalendarIcon, ChevronUp
 } from 'lucide-react';
 
 /* --- Fonts & Global Styles --- */
@@ -32,6 +32,11 @@ const GlobalStyles = () => (
     ::selection {
       background: #000;
       color: #fff;
+    }
+    
+    /* Smooth scrolling for anchor links */
+    html {
+      scroll-behavior: smooth;
     }
   `}</style>
 );
@@ -135,8 +140,15 @@ const Section = ({ label, children, className = "", id = "" }) => (
   <section id={id} className={`py-20 md:py-24 ${className}`}>
     <div className="max-w-[1400px] mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
       {label !== null && (
-        <div className="md:col-span-3 lg:col-span-3">
-          <span className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-gray-400 sticky top-32">
+        <div className="md:col-span-3 lg:col-span-3 relative">
+          {/* Mobile Sticky Label - Pinned to top on mobile */}
+          <div className="md:hidden sticky top-20 z-30 bg-white/95 backdrop-blur-sm py-3 -mx-6 px-6 border-b border-gray-50 mb-6">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-gray-900 font-semibold">
+              {label}
+            </span>
+          </div>
+          {/* Desktop Sticky Label */}
+          <span className="hidden md:block text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-gray-400 sticky top-32">
             {label}
           </span>
         </div>
@@ -148,7 +160,19 @@ const Section = ({ label, children, className = "", id = "" }) => (
   </section>
 );
 
-const Navigation = ({ currentView, setView, onQuickBook }) => {
+const Toast = ({ message, onClose }) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 50 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: 20 }}
+    className="fixed bottom-6 right-6 z-[100] bg-black text-white px-6 py-4 flex items-center gap-3 shadow-xl"
+  >
+    <Check size={16} className="text-green-400" />
+    <span className="text-sm font-medium">{message}</span>
+  </motion.div>
+);
+
+const Navigation = ({ currentView, setView, onNavBook, onMenuBook }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleNav = (view, sectionId) => {
@@ -201,7 +225,7 @@ const Navigation = ({ currentView, setView, onQuickBook }) => {
         {/* Right: Action & Mobile Toggle */}
         <div className="flex items-center gap-4 h-full">
           <button 
-            onClick={onQuickBook}
+            onClick={onNavBook}
             className="bg-black text-white px-6 py-2.5 text-[10px] uppercase tracking-widest hover:bg-gray-800 transition-colors"
           >
             Book Now
@@ -227,19 +251,19 @@ const Navigation = ({ currentView, setView, onQuickBook }) => {
             <div className="flex flex-col items-center justify-center flex-grow space-y-10 py-10">
               <button 
                 onClick={() => handleNav('home')}
-                className="text-3xl font-light uppercase tracking-[0.25em] text-black hover:text-gray-500 transition-colors"
+                className={`text-3xl font-light uppercase tracking-[0.25em] hover:text-gray-500 transition-colors ${currentView === 'home' ? 'font-medium text-black' : 'text-gray-400'}`}
               >
                 Home
               </button>
               <button 
                 onClick={() => handleNav('services')}
-                className="text-3xl font-light uppercase tracking-[0.25em] text-black hover:text-gray-500 transition-colors"
+                className={`text-3xl font-light uppercase tracking-[0.25em] hover:text-gray-500 transition-colors ${currentView === 'services' ? 'font-medium text-black' : 'text-gray-400'}`}
               >
                 Treatments
               </button>
               <button 
                 onClick={() => handleNav(currentView, 'contact')}
-                className="text-3xl font-light uppercase tracking-[0.25em] text-black hover:text-gray-500 transition-colors"
+                className="text-3xl font-light uppercase tracking-[0.25em] text-gray-400 hover:text-gray-500 transition-colors"
               >
                 Contact
               </button>
@@ -261,7 +285,7 @@ const Navigation = ({ currentView, setView, onQuickBook }) => {
 };
 
 /* --- VIEW: HOME --- */
-const HomeView = ({ setView, onQuickBook }) => {
+const HomeView = ({ setView, onFooterBook }) => {
   return (
     <motion.div 
       initial={{ opacity: 0 }} 
@@ -288,7 +312,7 @@ const HomeView = ({ setView, onQuickBook }) => {
               Explore Treatments <ArrowRight size={12} />
             </button>
             <button 
-              onClick={onQuickBook}
+              onClick={onFooterBook}
               className="text-xs uppercase tracking-[0.2em] bg-black text-white px-6 py-3 hover:bg-gray-800 transition-colors"
             >
               Book Appointment
@@ -381,7 +405,7 @@ const HomeView = ({ setView, onQuickBook }) => {
 };
 
 /* --- VIEW: SERVICES & BOOKING --- */
-const ServicesView = ({ preSelected }) => {
+const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }) => {
   const [activeTab, setActiveTab] = useState('all');
   const [selectedTreatment, setSelectedTreatment] = useState(
     preSelected || { name: "General Consultation", price: "$30", desc: "Full facial analysis & treatment plan." }
@@ -394,12 +418,20 @@ const ServicesView = ({ preSelected }) => {
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
   const [booked, setBooked] = useState(false);
+  const successRef = useRef(null);
 
   useEffect(() => {
     if (preSelected) {
       setSelectedTreatment(preSelected);
     }
   }, [preSelected]);
+
+  // Scroll to success message when booked
+  useEffect(() => {
+    if (booked && successRef.current) {
+        successRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [booked]);
 
   const getDates = () => {
     const dates = [];
@@ -430,6 +462,20 @@ const ServicesView = ({ preSelected }) => {
     ? SERVICE_CATEGORIES 
     : SERVICE_CATEGORIES.filter(c => c.id === activeTab);
 
+  const handleGoogleCalendar = () => {
+    if (!selectedDate || !selectedTime || !selectedTreatment) return;
+    
+    // Create a mock date object for the calendar link (using current year)
+    const currentYear = new Date().getFullYear();
+    const startTimeStr = `${selectedDate.date} ${new Date().toLocaleString('default', { month: 'long' })} ${currentYear} ${selectedTime}`;
+    // Simple encoding for demo - in production use real Date objects
+    const text = encodeURIComponent(`Appointment: ${selectedTreatment.name}`);
+    const details = encodeURIComponent(`Procedure at Face & Figure with Dr. Irina Votyakova.`);
+    const location = encodeURIComponent("City Medical Center, 3rd Floor, East Blvd, Saida, Lebanon");
+    
+    window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${details}&location=${location}`, '_blank');
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }} 
@@ -441,6 +487,7 @@ const ServicesView = ({ preSelected }) => {
       <Section label="MENU" className="!border-t-0" id="treatment-menu">
         <div className="mb-10">
           <h2 className="text-3xl font-light tracking-tight mb-8">Treatment Menu</h2>
+          {/* Reverted to non-scrollable, wrapping layout as requested */}
           <div className="flex flex-wrap gap-x-8 gap-y-4 text-[11px] uppercase tracking-[0.15em] font-medium text-gray-400">
             <button 
               onClick={() => setActiveTab('all')}
@@ -460,7 +507,7 @@ const ServicesView = ({ preSelected }) => {
           </div>
         </div>
 
-        <div className="space-y-16">
+        <div className="space-y-16 mt-8 md:mt-0">
           {filteredCategories.map((category) => (
             <div key={category.id}>
               <h3 className="text-xs uppercase tracking-widest text-gray-400 mb-6 border-b border-gray-100 pb-2">{category.name}</h3>
@@ -472,6 +519,7 @@ const ServicesView = ({ preSelected }) => {
                     onMouseLeave={() => setHoveredCase(null)}
                     onClick={() => {
                       setSelectedTreatment(service);
+                      onSelection(service.name); // Trigger toast
                     }}
                     className="group relative border-b border-gray-100 py-5 cursor-pointer hover:bg-gray-50/50 transition-colors"
                   >
@@ -519,7 +567,10 @@ const ServicesView = ({ preSelected }) => {
                      <div className="flex items-center gap-4">
                         <span className="text-sm font-medium">{selectedTreatment.price}</span>
                         <button 
-                          onClick={() => setSelectedTreatment(null)}
+                          onClick={() => {
+                            setSelectedTreatment(null);
+                            onChangeTreatment(); // Scroll to top
+                          }}
                           className="text-xs uppercase tracking-widest text-gray-400 hover:text-red-500"
                         >
                           Change
@@ -621,32 +672,60 @@ const ServicesView = ({ preSelected }) => {
             </div>
           ) : (
             <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }}
+              ref={successRef}
+              initial={{ opacity: 0, y: 20 }} 
+              animate={{ opacity: 1, y: 0 }}
               className="py-12 border border-gray-100 p-8 bg-gray-50"
             >
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">
-                  <Check size={16} />
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white shadow-md">
+                  <Check size={20} />
                 </div>
-                <h3 className="text-xl">Request Received</h3>
+                <h3 className="text-xl md:text-2xl font-light">Appointment Confirmed</h3>
               </div>
-              <p className="text-gray-500 font-light max-w-md mb-8">
-                Thank you, {clientName}. We have reserved your spot for {selectedTreatment?.name} on {selectedDate?.fullDate} at {selectedTime}. We will contact you at {clientPhone} to confirm.
+              
+              <div className="bg-white p-6 border border-gray-100 mb-8 space-y-4">
+                 <div className="flex justify-between border-b border-gray-50 pb-2">
+                    <span className="text-gray-500 text-xs uppercase tracking-widest">Procedure</span>
+                    <span className="text-black font-medium text-sm">{selectedTreatment?.name}</span>
+                 </div>
+                 <div className="flex justify-between border-b border-gray-50 pb-2">
+                    <span className="text-gray-500 text-xs uppercase tracking-widest">Date & Time</span>
+                    <span className="text-black font-medium text-sm">{selectedDate?.fullDate} at {selectedTime}</span>
+                 </div>
+                 <div className="flex justify-between">
+                    <span className="text-gray-500 text-xs uppercase tracking-widest">Location</span>
+                    <span className="text-black font-medium text-sm text-right">City Medical Center,<br/>3rd Floor, Saida</span>
+                 </div>
+              </div>
+
+              <p className="text-gray-500 font-light text-sm mb-8">
+                Thank you, {clientName}. We have reserved your spot. A confirmation has been sent to your number.
               </p>
-              <button 
-                onClick={() => {
-                   setBooked(false);
-                   setSelectedTreatment({ name: "General Consultation", price: "$30", desc: "Full facial analysis & treatment plan." }); // Reset to consultation
-                   setSelectedDate(null);
-                   setSelectedTime(null);
-                   setClientName("");
-                   setClientPhone("");
-                }} 
-                className="text-xs uppercase tracking-widest border-b border-black pb-1"
-              >
-                Book Another
-              </button>
+
+              <div className="flex flex-col md:flex-row gap-4">
+                 <button 
+                   onClick={handleGoogleCalendar}
+                   className="flex items-center justify-center gap-2 bg-black text-white px-6 py-3 text-xs uppercase tracking-widest hover:bg-gray-800 transition-colors"
+                 >
+                   <CalendarIcon size={14} />
+                   Add to Calendar
+                 </button>
+                 <button 
+                   onClick={() => {
+                      setBooked(false);
+                      setSelectedTreatment(null);
+                      setSelectedDate(null);
+                      setSelectedTime(null);
+                      setClientName("");
+                      setClientPhone("");
+                      onChangeTreatment(); // Scroll to top
+                   }} 
+                   className="text-xs uppercase tracking-widest border border-gray-200 px-6 py-3 hover:border-black transition-colors"
+                 >
+                   Book Another
+                 </button>
+              </div>
             </motion.div>
           )}
         </div>
@@ -656,7 +735,7 @@ const ServicesView = ({ preSelected }) => {
 };
 
 /* --- SHARED FOOTER --- */
-const Footer = ({ onQuickBook, hideBookingCTA }) => {
+const Footer = ({ onFooterBook, hideBookingCTA }) => {
   return (
     <footer id="contact" className="py-24 border-t border-gray-100 bg-white">
       <div className="max-w-[1400px] mx-auto px-6">
@@ -675,7 +754,7 @@ const Footer = ({ onQuickBook, hideBookingCTA }) => {
             {!hideBookingCTA ? (
               <div className="flex flex-col items-start gap-8">
                 <button 
-                  onClick={onQuickBook}
+                  onClick={onFooterBook}
                   className="group block text-left w-full"
                 >
                   <h2 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-tight leading-none text-black group-hover:text-gray-500 transition-colors uppercase break-words"
@@ -743,10 +822,43 @@ const Footer = ({ onQuickBook, hideBookingCTA }) => {
 const App = () => {
   const [view, setView] = useState('home'); 
   const [preSelected, setPreSelected] = useState(null);
+  const [toast, setToast] = useState(null);
 
-  const handleQuickBook = () => {
+  // Auto-hide toast after 3 seconds
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  // Logic for Footer "Book Appointment" - Always Top
+  const handleFooterBook = () => {
     setPreSelected({ name: "General Consultation", price: "$30", desc: "Full facial analysis & treatment plan." });
     setView('services');
+    window.scrollTo(0, 0);
+  };
+
+  // Logic for Nav "Book Now" - Context Aware
+  const handleNavBook = () => {
+    if (view === 'services') {
+      // Point 2: Scroll to booking menu if already on treatments page
+      const el = document.getElementById('reservation');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // Point 1: Open treatments page at top
+      setPreSelected({ name: "General Consultation", price: "$30", desc: "Full facial analysis & treatment plan." });
+      setView('services');
+      window.scrollTo(0, 0);
+    }
+  };
+
+  const handleScrollToTop = () => {
+      window.scrollTo(0, 0);
+  }
+
+  const handleSelection = (name) => {
+    setToast(`${name} selected`);
   };
 
   return (
@@ -755,20 +867,29 @@ const App = () => {
       <Navigation 
           currentView={view} 
           setView={setView} 
-          onQuickBook={handleQuickBook} 
+          onNavBook={handleNavBook} 
       />
 
       <main>
         <AnimatePresence mode="wait">
           {view === 'home' ? (
-             <HomeView key="home" setView={setView} onQuickBook={handleQuickBook} />
+             <HomeView key="home" setView={setView} onFooterBook={handleFooterBook} />
           ) : (
-             <ServicesView key="services" preSelected={preSelected} />
+             <ServicesView 
+               key="services" 
+               preSelected={preSelected} 
+               onSelection={handleSelection}
+               onChangeTreatment={handleScrollToTop}
+             />
           )}
         </AnimatePresence>
       </main>
 
-      <Footer onQuickBook={handleQuickBook} hideBookingCTA={view === 'services'} />
+      <Footer onFooterBook={handleFooterBook} hideBookingCTA={view === 'services'} />
+      
+      <AnimatePresence>
+        {toast && <Toast message={toast} onClose={() => setToast(null)} />}
+      </AnimatePresence>
     </div>
   );
 };
