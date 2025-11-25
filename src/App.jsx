@@ -134,8 +134,9 @@ const TIME_SLOTS = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00
 /* --- Components --- */
 
 // Reusable Section Layout (Label Left, Content Right)
+// UPDATED: Increased mobile padding from py-12 to py-20 to reduce cramping
 const Section = ({ label, children, className = "", id = "" }) => (
-  <section id={id} className={`py-12 md:py-24 ${className}`}>
+  <section id={id} className={`py-20 md:py-24 ${className}`}>
     <div className="max-w-[1400px] mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
       {label !== null && (
         <div className="md:col-span-3 lg:col-span-3">
