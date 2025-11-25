@@ -143,7 +143,8 @@ const Section = ({ label, children, className = "", id = "" }) => (
         <div className="md:col-span-3 lg:col-span-3 relative">
           {/* Mobile Sticky Label - Pinned to top on mobile */}
           <div className="md:hidden sticky top-20 z-30 bg-white/95 backdrop-blur-sm py-3 -mx-6 px-6 border-b border-gray-50 mb-6">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-gray-900 font-semibold">
+            {/* UPDATED: Changed text-gray-900 to text-gray-400 and removed font-semibold to match desktop style */}
+            <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400">
               {label}
             </span>
           </div>
@@ -251,13 +252,15 @@ const Navigation = ({ currentView, setView, onNavBook, onMenuBook }) => {
             <div className="flex flex-col items-center justify-center flex-grow space-y-10 py-10">
               <button 
                 onClick={() => handleNav('home')}
-                className={`text-3xl font-light uppercase tracking-[0.25em] hover:text-gray-500 transition-colors ${currentView === 'home' ? 'font-medium text-black' : 'text-gray-400'}`}
+                // UPDATED: Removed font-medium from active state to keep the lightweight style consistent
+                className={`text-3xl font-light uppercase tracking-[0.25em] hover:text-gray-500 transition-colors ${currentView === 'home' ? 'text-black' : 'text-gray-400'}`}
               >
                 Home
               </button>
               <button 
                 onClick={() => handleNav('services')}
-                className={`text-3xl font-light uppercase tracking-[0.25em] hover:text-gray-500 transition-colors ${currentView === 'services' ? 'font-medium text-black' : 'text-gray-400'}`}
+                // UPDATED: Removed font-medium from active state
+                className={`text-3xl font-light uppercase tracking-[0.25em] hover:text-gray-500 transition-colors ${currentView === 'services' ? 'text-black' : 'text-gray-400'}`}
               >
                 Treatments
               </button>
@@ -510,7 +513,10 @@ const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }
         <div className="space-y-16 mt-8 md:mt-0">
           {filteredCategories.map((category) => (
             <div key={category.id}>
-              <h3 className="text-xs uppercase tracking-widest text-gray-400 mb-6 border-b border-gray-100 pb-2">{category.name}</h3>
+              {/* UPDATED: Added sticky positioning classes */}
+              <h3 className="sticky top-32 md:top-20 z-10 bg-white/95 backdrop-blur-sm py-4 mb-6 border-b border-gray-100 text-xs uppercase tracking-widest text-gray-400">
+                {category.name}
+              </h3>
               <div>
                 {category.items.map((service, index) => (
                   <div 
