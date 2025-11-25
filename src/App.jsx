@@ -142,13 +142,14 @@ const Section = ({ label, children, className = "", id = "" }) => (
       {label !== null && (
         <div className="md:col-span-3 lg:col-span-3 relative">
           {/* Mobile Sticky Label - Pinned to top on mobile with gradient */}
+          {/* UPDATED: Removed border-b border-gray-50 */}
           <div className="md:hidden sticky top-20 z-30 bg-gradient-to-b from-white via-white/95 to-white/80 backdrop-blur-sm py-4 -mx-6 px-6 mb-6">
             <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400">
               {label}
             </span>
           </div>
           {/* Desktop Sticky Label - Updated to be pinned immediately below header (top-24) */}
-          <div className="hidden md:block sticky top-24">
+          <div className="hidden md:block sticky top-20">
              <span className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-gray-400">
                {label}
              </span>
@@ -192,6 +193,7 @@ const Navigation = ({ currentView, setView, onNavBook, onMenuBook }) => {
 
   return (
     // Updated Header with Gradient Transparency
+    // UPDATED: Removed border-b border-gray-50
     <nav className="fixed top-0 left-0 right-0 w-full z-50 bg-gradient-to-b from-white via-white/90 to-white/0 backdrop-blur-sm transition-all">
       <div className="max-w-[1400px] mx-auto px-6 h-20 flex justify-between items-center relative z-50">
         
@@ -512,8 +514,8 @@ const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }
         <div className="space-y-16 mt-8 md:mt-0">
           {filteredCategories.map((category) => (
             <div key={category.id}>
-              {/* UPDATED: Gradient background, sticky positioning on both mobile and desktop (top-20) */}
-              <h3 className="sticky top-20 md:top-24 z-10 bg-gradient-to-b from-white via-white/95 to-white/80 backdrop-blur-sm py-4 mb-6 border-b border-gray-100 text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-gray-400">
+              {/* UPDATED: Removed border-b and matched gradient to header exactly (via-white/90 to-white/0) for seamless blend */}
+              <h3 className="sticky top-20 md:top-20 z-10 bg-gradient-to-b from-white via-white/90 to-white/0 backdrop-blur-sm py-4 mb-6 text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-gray-400">
                 {category.name}
               </h3>
               <div>
