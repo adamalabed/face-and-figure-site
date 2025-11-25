@@ -41,19 +41,16 @@ const HERO_TREATMENTS = [
   { 
     title: "Lip Sculpting", 
     desc: "Subtle volume & definition.", 
-    // Image 1: Lip Sculpting
     image: "https://i.ibb.co/zTWv5M6y/Gemini-Generated-Image-2.png" 
   },
   { 
     title: "Botox", 
     desc: "Full face balancing.", 
-    // Image 2: Botox - UPDATED with the new URL
     image: "https://i.ibb.co/3yYtswBZ/Gemini-Generated-Image-1.png" 
   },
   { 
     title: "Glass Skin Facial", 
     desc: "Deep hydration glow.", 
-    // Image 3: Glass Skin Facial (Updated to the new file)
     image: "https://i.ibb.co/v4Zc2C1f/Gemini-Generated-Image.png" 
   }
 ];
@@ -134,7 +131,6 @@ const TIME_SLOTS = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00
 /* --- Components --- */
 
 // Reusable Section Layout (Label Left, Content Right)
-// UPDATED: Increased mobile padding from py-12 to py-20 to reduce cramping
 const Section = ({ label, children, className = "", id = "" }) => (
   <section id={id} className={`py-20 md:py-24 ${className}`}>
     <div className="max-w-[1400px] mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
@@ -170,18 +166,17 @@ const Navigation = ({ currentView, setView, onQuickBook }) => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-50 transition-all">
-      {/* Added 'items-center' to ensure vertical alignment of all flex children */}
-      <div className="max-w-[1400px] mx-auto px-6 h-20 flex justify-between items-center relative">
+      <div className="max-w-[1400px] mx-auto px-6 h-20 flex justify-between items-center relative z-50">
         
         {/* Left: Logo */}
         <div 
-          className="text-sm font-semibold tracking-widest uppercase cursor-pointer hover:opacity-70 transition-opacity flex items-center gap-2 z-50 h-full"
+          className="text-sm font-semibold tracking-widest uppercase cursor-pointer hover:opacity-70 transition-opacity flex items-center gap-2 h-full"
           onClick={() => handleNav('home')}
         >
           Face & Figure <span className="hidden sm:inline text-[10px] font-light tracking-normal normal-case text-gray-500">by Irina Votyakova</span>
         </div>
         
-        {/* Center: Nav Links - ABSOLUTE CENTERED */}
+        {/* Center: Nav Links */}
         <div className="hidden md:flex absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center h-full space-x-12 text-[11px] font-medium tracking-[0.15em] uppercase text-gray-500">
           <button 
             onClick={() => handleNav('home')} 
@@ -204,7 +199,7 @@ const Navigation = ({ currentView, setView, onQuickBook }) => {
         </div>
 
         {/* Right: Action & Mobile Toggle */}
-        <div className="flex items-center gap-4 z-50 h-full">
+        <div className="flex items-center gap-4 h-full">
           <button 
             onClick={onQuickBook}
             className="bg-black text-white px-6 py-2.5 text-[10px] uppercase tracking-widest hover:bg-gray-800 transition-colors"
@@ -217,50 +212,50 @@ const Navigation = ({ currentView, setView, onQuickBook }) => {
             {mobileMenuOpen ? <CloseIcon size={24} /> : <Menu size={24} />}
           </button>
         </div>
-
-        {/* Mobile Menu Overlay - Updated Style */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 top-[80px] bg-white z-40 flex flex-col items-center justify-between pb-10 overflow-y-auto"
-            >
-              <div className="flex flex-col items-center justify-center flex-grow space-y-10 py-10">
-                <button 
-                  onClick={() => handleNav('home')}
-                  className="text-3xl font-light uppercase tracking-[0.25em] text-black hover:text-gray-500 transition-colors"
-                >
-                  Home
-                </button>
-                <button 
-                  onClick={() => handleNav('services')}
-                  className="text-3xl font-light uppercase tracking-[0.25em] text-black hover:text-gray-500 transition-colors"
-                >
-                  Treatments
-                </button>
-                <button 
-                  onClick={() => handleNav(currentView, 'contact')}
-                  className="text-3xl font-light uppercase tracking-[0.25em] text-black hover:text-gray-500 transition-colors"
-                >
-                  Contact
-                </button>
-              </div>
-
-              {/* Footer Info in Menu */}
-              <div className="w-full text-center shrink-0">
-                 <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-3">Beirut • Saida</p>
-                 <div className="flex justify-center gap-6 text-[10px] uppercase tracking-widest text-gray-300">
-                    <span>Instagram</span>
-                    <span>Maps</span>
-                 </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
+
+      {/* Mobile Menu Overlay - Rendered as direct child of nav to avoid positioning conflicts */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 top-[80px] w-full h-[calc(100vh-80px)] bg-white z-40 flex flex-col items-center justify-between pb-10 overflow-y-auto"
+          >
+            <div className="flex flex-col items-center justify-center flex-grow space-y-10 py-10">
+              <button 
+                onClick={() => handleNav('home')}
+                className="text-3xl font-light uppercase tracking-[0.25em] text-black hover:text-gray-500 transition-colors"
+              >
+                Home
+              </button>
+              <button 
+                onClick={() => handleNav('services')}
+                className="text-3xl font-light uppercase tracking-[0.25em] text-black hover:text-gray-500 transition-colors"
+              >
+                Treatments
+              </button>
+              <button 
+                onClick={() => handleNav(currentView, 'contact')}
+                className="text-3xl font-light uppercase tracking-[0.25em] text-black hover:text-gray-500 transition-colors"
+              >
+                Contact
+              </button>
+            </div>
+
+            {/* Footer Info in Menu */}
+            <div className="w-full text-center shrink-0">
+                <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-3">Beirut • Saida</p>
+                <div className="flex justify-center gap-6 text-[10px] uppercase tracking-widest text-gray-300">
+                  <span>Instagram</span>
+                  <span>Maps</span>
+                </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };
@@ -274,7 +269,7 @@ const HomeView = ({ setView, onQuickBook }) => {
       exit={{ opacity: 0 }}
       className="pt-40"
     >
-      {/* Hero - INTRO label and column removed */}
+      {/* Hero */}
       <Section label={null}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -302,7 +297,7 @@ const HomeView = ({ setView, onQuickBook }) => {
         </motion.div>
       </Section>
 
-      {/* ABOUT (Merged with Director) */}
+      {/* ABOUT */}
       <Section label="ABOUT">
         <div className="space-y-10 max-w-3xl text-base md:text-lg font-light leading-relaxed text-gray-800">
           <p>
@@ -316,7 +311,6 @@ const HomeView = ({ setView, onQuickBook }) => {
             
             <div className="pt-4 flex items-start gap-8">
                <div className="h-32 w-32 bg-gray-100 overflow-hidden">
-                 {/* Added 'object-[50%_30%]' to shift the image focus higher up */}
                  <img src="https://i.ibb.co/4nkDtfVf/IMG-0174.jpg" className="w-full h-full object-cover object-[50%_30%] grayscale" alt="Dr" />
                </div>
                <div>
@@ -342,19 +336,16 @@ const HomeView = ({ setView, onQuickBook }) => {
                   src={item.image} 
                   alt={item.title} 
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                  onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/800x600/f0f0f0/cccccc?text=Image+Loading..." }} // Fallback
+                  onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/800x600/f0f0f0/cccccc?text=Image+Loading..." }} 
                 />
               </div>
-              {/* Removed min-h-[3.5rem] to fix large gap between title and description */}
               <h3 className="text-lg font-normal text-black mb-2">{item.title}</h3>
-              {/* UPDATED: Changed text-gray-500 to text-gray-600 for better contrast */}
               <p className="text-xs text-gray-600 font-medium leading-relaxed max-w-xs text-left">
                 {item.desc}
               </p>
             </div>
           ))}
 
-          {/* 4th Block: See All Treatments CTA */}
           <div 
             className="group cursor-pointer flex flex-col items-start h-full"
             onClick={() => setView('services')}
@@ -366,9 +357,7 @@ const HomeView = ({ setView, onQuickBook }) => {
                 <ArrowRight size={18} />
               </div>
             </div>
-            {/* Removed min-h-[3.5rem] here as well */}
             <h3 className="text-lg font-normal text-black mb-2">All Services</h3>
-            {/* UPDATED: Shortened description */}
             <p className="text-xs text-gray-600 font-medium leading-relaxed max-w-xs text-left">
               Full menu of treatments.
             </p>
@@ -376,7 +365,7 @@ const HomeView = ({ setView, onQuickBook }) => {
         </div>
       </Section>
 
-      {/* REPUTATION / NUMBERS */}
+      {/* REPUTATION */}
       <Section label="REPUTATION">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
           {STATS.map((stat, i) => (
@@ -394,7 +383,6 @@ const HomeView = ({ setView, onQuickBook }) => {
 /* --- VIEW: SERVICES & BOOKING --- */
 const ServicesView = ({ preSelected }) => {
   const [activeTab, setActiveTab] = useState('all');
-  // Set default treatment to General Consultation if no preselection is made
   const [selectedTreatment, setSelectedTreatment] = useState(
     preSelected || { name: "General Consultation", price: "$30", desc: "Full facial analysis & treatment plan." }
   );
@@ -410,7 +398,6 @@ const ServicesView = ({ preSelected }) => {
   useEffect(() => {
     if (preSelected) {
       setSelectedTreatment(preSelected);
-      // Removed scroll here to respect user feedback
     }
   }, [preSelected]);
 
@@ -485,7 +472,6 @@ const ServicesView = ({ preSelected }) => {
                     onMouseLeave={() => setHoveredCase(null)}
                     onClick={() => {
                       setSelectedTreatment(service);
-                      // Removed auto-scroll on click to respect user feedback
                     }}
                     className="group relative border-b border-gray-100 py-5 cursor-pointer hover:bg-gray-50/50 transition-colors"
                   >
@@ -682,7 +668,6 @@ const Footer = ({ onQuickBook, hideBookingCTA }) => {
             <div className="text-sm font-light text-gray-600 space-y-1">
               <p>City Medical Center, 3rd Floor</p>
               <p>East Blvd, Saida, Lebanon</p>
-              {/* Phone number removed from here to highlight it as a button below */}
             </div>
           </div>
           
@@ -697,7 +682,6 @@ const Footer = ({ onQuickBook, hideBookingCTA }) => {
                       style={{ lineHeight: '0.9' }}
                   >
                     BOOK APPOINTMENT 
-                    {/* Replaced ↗ with ArrowUpRight icon */}
                     <ArrowUpRight strokeWidth={1.5} className="inline-block ml-2 w-8 h-8 md:w-16 md:h-16 text-black group-hover:text-gray-500 relative -top-1 md:-top-3 align-middle" />
                   </h2>
                 </button>
