@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  ArrowRight, Clock, MapPin, Phone, Instagram, Facebook, 
+  ArrowRight, ArrowUpRight, Clock, MapPin, Phone, Instagram, Facebook, 
   Menu, X as CloseIcon, Check, Plus, Calendar as CalendarIcon
 } from 'lucide-react';
 
@@ -262,9 +262,9 @@ const HomeView = ({ setView, onQuickBook }) => {
           <div className="flex flex-wrap gap-6">
             <button 
               onClick={() => setView('services')}
-              className="text-xs uppercase tracking-[0.2em] border-b border-black pb-1 hover:opacity-50 transition-opacity"
+              className="text-xs uppercase tracking-[0.2em] border-b border-black pb-1 hover:opacity-50 transition-opacity flex items-center gap-2"
             >
-              Explore Treatments &rarr;
+              Explore Treatments <ArrowRight size={12} />
             </button>
             <button 
               onClick={onQuickBook}
@@ -670,7 +670,9 @@ const Footer = ({ onQuickBook, hideBookingCTA }) => {
                   <h2 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-tight leading-none text-black group-hover:text-gray-500 transition-colors uppercase break-words"
                       style={{ lineHeight: '0.9' }}
                   >
-                    BOOK APPOINTMENT <span className="text-2xl align-top text-black group-hover:text-gray-500 relative top-1 md:top-2">↗</span>
+                    BOOK APPOINTMENT 
+                    {/* Replaced ↗ with ArrowUpRight icon */}
+                    <ArrowUpRight strokeWidth={1.5} className="inline-block ml-2 w-8 h-8 md:w-16 md:h-16 text-black group-hover:text-gray-500 relative -top-1 md:-top-3 align-middle" />
                   </h2>
                 </button>
 
@@ -699,9 +701,9 @@ const Footer = ({ onQuickBook, hideBookingCTA }) => {
             )}
             
             <div className="mt-12 md:mt-16 flex justify-between items-end">
-              <div className="text-[10px] uppercase tracking-widest text-gray-400">
-                <a href="#" className="hover:text-black mr-6">Instagram ↗</a>
-                <a href="#" className="hover:text-black">Maps ↗</a>
+              <div className="text-[10px] uppercase tracking-widest text-gray-400 flex gap-6">
+                <a href="#" className="hover:text-black flex items-center gap-1">Instagram <ArrowUpRight size={10} /></a>
+                <a href="#" className="hover:text-black flex items-center gap-1">Maps <ArrowUpRight size={10} /></a>
               </div>
               <div className="text-[10px] text-gray-300">
                 © 2025 FACE & FIGURE
