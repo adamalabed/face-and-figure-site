@@ -136,20 +136,19 @@ const TIME_SLOTS = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00
 /* --- Components --- */
 
 // Reusable Section Layout (Label Left, Content Right)
-const Section = ({ label, children, className = "", id = "" }) => (
+const Section = ({ label, children, className = "", id = "", stickyTop = "top-20" }) => (
   <section id={id} className={`py-20 md:py-24 ${className}`}>
     <div className="max-w-[1400px] mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
       {label !== null && (
         <div className="md:col-span-3 lg:col-span-3 relative">
-          {/* Mobile Sticky Label - Pinned to top on mobile with gradient */}
-          {/* UPDATED: Removed border-b border-gray-50 */}
-          <div className="md:hidden sticky top-20 z-30 bg-gradient-to-b from-white via-white/95 to-white/80 backdrop-blur-sm py-4 -mx-6 px-6 mb-6">
+          {/* Mobile Sticky Label - Solid background */}
+          <div className="md:hidden sticky top-20 z-30 bg-white border-b border-gray-50 py-4 -mx-6 px-6 mb-6">
             <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400">
               {label}
             </span>
           </div>
-          {/* Desktop Sticky Label - Updated to be pinned immediately below header (top-24) */}
-          <div className="hidden md:block sticky top-20">
+          {/* Desktop Sticky Label - Custom sticky top for alignment */}
+          <div className={`hidden md:block sticky ${stickyTop}`}>
              <span className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-gray-400">
                {label}
              </span>
@@ -192,9 +191,8 @@ const Navigation = ({ currentView, setView, onNavBook, onMenuBook }) => {
   };
 
   return (
-    // Updated Header with Gradient Transparency
-    // UPDATED: Removed border-b border-gray-50
-    <nav className="fixed top-0 left-0 right-0 w-full z-50 bg-gradient-to-b from-white via-white/90 to-white/0 backdrop-blur-sm transition-all">
+    // Reverted to Solid White Header with Border
+    <nav className="fixed top-0 left-0 right-0 w-full z-50 bg-white border-b border-gray-50 transition-all">
       <div className="max-w-[1400px] mx-auto px-6 h-20 flex justify-between items-center relative z-50">
         
         {/* Left: Logo */}
@@ -325,8 +323,8 @@ const HomeView = ({ setView, onFooterBook }) => {
         </motion.div>
       </Section>
 
-      {/* ABOUT */}
-      <Section label="ABOUT">
+      {/* ABOUT - Updated stickyTop to sit lower */}
+      <Section label="ABOUT" stickyTop="top-40">
         <div className="space-y-10 max-w-3xl text-base md:text-lg font-light leading-relaxed text-gray-800">
           <p>
             Face & Figure is a sanctuary for aesthetic refinement. Founded on the principles of medical precision and artistic integrity, we offer a curated approach to modern beauty. We believe in enhancing your natural architecture, not rewriting it.
@@ -350,8 +348,8 @@ const HomeView = ({ setView, onFooterBook }) => {
         </div>
       </Section>
 
-      {/* HIGHLIGHTS */}
-      <Section label="HIGHLIGHTS">
+      {/* HIGHLIGHTS - Updated stickyTop to sit lower */}
+      <Section label="HIGHLIGHTS" stickyTop="top-40">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-12">
           {HERO_TREATMENTS.map((item, i) => (
             <div 
@@ -393,8 +391,8 @@ const HomeView = ({ setView, onFooterBook }) => {
         </div>
       </Section>
 
-      {/* REPUTATION */}
-      <Section label="REPUTATION">
+      {/* REPUTATION - Updated stickyTop to sit lower */}
+      <Section label="REPUTATION" stickyTop="top-40">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
           {STATS.map((stat, i) => (
             <div key={i} className="flex flex-col">
@@ -487,8 +485,8 @@ const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }
       exit={{ opacity: 0 }}
       className="pt-32"
     >
-      {/* MENU SECTION */}
-      <Section label="MENU" className="!border-t-0" id="treatment-menu">
+      {/* MENU SECTION - Added stickyTop prop to align with header padding */}
+      <Section label="MENU" className="!border-t-0" id="treatment-menu" stickyTop="top-24">
         <div className="mb-10">
           <h2 className="text-3xl font-light tracking-tight mb-8">Treatment Menu</h2>
           {/* Reverted to non-scrollable, wrapping layout as requested */}
@@ -514,8 +512,8 @@ const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }
         <div className="space-y-16 mt-8 md:mt-0">
           {filteredCategories.map((category) => (
             <div key={category.id}>
-              {/* UPDATED: Removed border-b and matched gradient to header exactly (via-white/90 to-white/0) for seamless blend */}
-              <h3 className="sticky top-20 md:top-20 z-10 bg-gradient-to-b from-white via-white/90 to-white/0 backdrop-blur-sm py-4 mb-6 text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-gray-400">
+              {/* UPDATED: Aligned category header to top-24 on desktop to match Section label */}
+              <h3 className="sticky top-20 md:top-24 z-10 bg-white py-4 mb-6 text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-gray-400">
                 {category.name}
               </h3>
               <div>
