@@ -512,8 +512,8 @@ const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }
         <div className="space-y-16 mt-8 md:mt-0">
           {filteredCategories.map((category) => (
             <div key={category.id}>
-              {/* UPDATED: Aligned category header to top-24 on desktop to match Section label */}
-              <h3 className="sticky top-20 md:top-24 z-10 bg-white py-4 mb-6 text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-gray-400">
+              {/* UPDATED: Changed from md:top-24 to md:top-20 to align text with MENU label and stick to header */}
+              <h3 className="sticky top-20 md:top-20 z-10 bg-white py-4 mb-6 text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-gray-400">
                 {category.name}
               </h3>
               <div>
