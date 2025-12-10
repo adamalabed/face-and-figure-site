@@ -444,6 +444,8 @@ const ServicesView = ({ preSelected, onChangeTreatment }) => {
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
   const [booked, setBooked] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionError, setSubmissionError] = useState(null);
   const successRef = useRef(null);
 
   useEffect(() => {
@@ -488,6 +490,44 @@ const ServicesView = ({ preSelected, onChangeTreatment }) => {
   const filteredCategories = activeTab === 'all' 
     ? SERVICE_CATEGORIES 
     : SERVICE_CATEGORIES.filter(c => c.id === activeTab);
+
+  const submitBooking = async () => {
+    if (!canBook) return;
+    
+    setIsSubmitting(true);
+    setSubmissionError(null);
+
+    const payload = {
+      treatment: selectedTreatment.name,
+      price: selectedTreatment.price,
+      date: selectedDate.fullDate,
+      time: selectedTime,
+      clientName,
+      clientPhone,
+      created_at: new Date().toISOString()
+    };
+
+    try {
+      const response = await fetch('https://hook.eu1.make.com/xxndncd5yskmcm5r4tl5g2035e0k72qt', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        setBooked(true);
+      } else {
+        setSubmissionError("Something went wrong. Please try again or call us.");
+      }
+    } catch (error) {
+      console.error("Booking Error:", error);
+      setSubmissionError("Network error. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleGoogleCalendar = () => {
     if (!selectedDate || !selectedTime || !selectedTreatment) return;
@@ -697,16 +737,23 @@ const ServicesView = ({ preSelected, onChangeTreatment }) => {
               </div>
 
               <div className="pt-6">
+                {submissionError && (
+                  <p className="text-red-500 text-xs uppercase tracking-widest mb-4">{submissionError}</p>
+                )}
                 <button 
-                  onClick={() => setBooked(true)}
-                  disabled={!canBook}
+                  onClick={submitBooking}
+                  disabled={!canBook || isSubmitting}
                   className={`text-sm uppercase tracking-widest py-4 w-full md:w-auto md:px-16 border transition-all flex items-center justify-center gap-2 ${
-                    canBook 
+                    canBook && !isSubmitting
                       ? 'border-black bg-black text-white hover:bg-gray-800' 
                       : 'border-gray-100 text-gray-300 cursor-not-allowed'
                   }`}
                 >
-                  Confirm Appointment <ArrowRight size={14} />
+                  {isSubmitting ? (
+                    <span>Processing...</span>
+                  ) : (
+                    <>Confirm Appointment <ArrowRight size={14} /></>
+                  )}
                 </button>
               </div>
             </div>
@@ -754,6 +801,8 @@ const ServicesView = ({ preSelected, onChangeTreatment }) => {
                  <button 
                    onClick={() => {
                       setBooked(false);
+                      setIsSubmitting(false); // Reset submitting state
+                      setSubmissionError(null); // Reset error
                       setSelectedTreatment(null);
                       setSelectedDate(null);
                       setSelectedTime(null);
