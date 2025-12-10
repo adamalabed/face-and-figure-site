@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowRight, ArrowUpRight, Clock, MapPin, Phone, Instagram, Facebook, 
-  Menu, X as CloseIcon, Check, Plus, Calendar as CalendarIcon, ChevronUp
+  Menu, X as CloseIcon, Check, Plus, Calendar as CalendarIcon, ChevronUp, X
 } from 'lucide-react';
 
 /* --- Fonts & Global Styles --- */
@@ -136,7 +136,8 @@ const TIME_SLOTS = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00
 /* --- Components --- */
 
 // Reusable Section Layout (Label Left, Content Right)
-const Section = ({ label, children, className = "", id = "", stickyTop = "top-20" }) => (
+// UPDATED: Added labelClassName prop to allow custom padding on the sticky label
+const Section = ({ label, children, className = "", id = "", stickyTop = "top-20", labelClassName = "" }) => (
   <section id={id} className={`py-20 md:py-24 ${className}`}>
     <div className="max-w-[1400px] mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
       {label !== null && (
@@ -148,7 +149,7 @@ const Section = ({ label, children, className = "", id = "", stickyTop = "top-20
             </span>
           </div>
           {/* Desktop Sticky Label - Custom sticky top for alignment */}
-          <div className={`hidden md:block sticky ${stickyTop}`}>
+          <div className={`hidden md:block sticky ${stickyTop} ${labelClassName}`}>
              <span className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-gray-400">
                {label}
              </span>
@@ -162,15 +163,36 @@ const Section = ({ label, children, className = "", id = "", stickyTop = "top-20
   </section>
 );
 
-const Toast = ({ message, onClose }) => (
+const StickyBookingBar = ({ treatment, onProceed, onCancel }) => (
   <motion.div 
-    initial={{ opacity: 0, y: 50 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: 20 }}
-    className="fixed bottom-6 right-6 z-[100] bg-black text-white px-6 py-4 flex items-center gap-3 shadow-xl"
+    initial={{ y: 100, opacity: 0 }}
+    animate={{ y: 0, opacity: 1 }}
+    exit={{ y: 100, opacity: 0 }}
+    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+    className="fixed bottom-0 left-0 right-0 z-[60] bg-white/95 backdrop-blur-md border-t border-gray-100 p-4 md:px-8 py-4 flex items-center justify-between shadow-[0_-5px_30px_rgba(0,0,0,0.08)]"
   >
-    <Check size={16} className="text-green-400" />
-    <span className="text-sm font-medium">{message}</span>
+    <div className="flex flex-col items-start gap-1">
+      <span className="text-[10px] uppercase tracking-widest text-gray-400">Selected Treatment</span>
+      <div className="flex items-baseline gap-3">
+         <span className="text-sm font-medium text-black">{treatment.name}</span>
+         <span className="text-xs text-gray-500 font-medium">{treatment.price}</span>
+      </div>
+    </div>
+    <div className="flex items-center gap-4">
+      <button 
+        onClick={onCancel}
+        className="text-gray-400 hover:text-red-500 transition-colors p-2"
+        aria-label="Cancel selection"
+      >
+        <X size={20} />
+      </button>
+      <button 
+        onClick={onProceed}
+        className="bg-black text-white px-6 py-3 text-xs uppercase tracking-widest hover:bg-gray-800 transition-colors flex items-center gap-2 shadow-lg"
+      >
+        Book This <ArrowRight size={14} />
+      </button>
+    </div>
   </motion.div>
 );
 
@@ -407,11 +429,13 @@ const HomeView = ({ setView, onFooterBook }) => {
 };
 
 /* --- VIEW: SERVICES & BOOKING --- */
-const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }) => {
+const ServicesView = ({ preSelected, onChangeTreatment }) => {
   const [activeTab, setActiveTab] = useState('all');
-  const [selectedTreatment, setSelectedTreatment] = useState(
-    preSelected || { name: "General Consultation", price: "$30", desc: "Full facial analysis & treatment plan." }
-  );
+  const DEFAULT_TREATMENT = { name: "General Consultation", price: "$30", desc: "Full facial analysis & treatment plan." };
+  
+  const [selectedTreatment, setSelectedTreatment] = useState(preSelected || DEFAULT_TREATMENT);
+  // Track if selection is explicit to show sticky bar
+  const [isStickyVisible, setIsStickyVisible] = useState(false);
   const [hoveredCase, setHoveredCase] = useState(null);
   
   // Booking State
@@ -425,6 +449,7 @@ const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }
   useEffect(() => {
     if (preSelected) {
       setSelectedTreatment(preSelected);
+      setIsStickyVisible(true); // Assuming incoming pre-selection means we should show it
     }
   }, [preSelected]);
 
@@ -478,6 +503,16 @@ const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }
     window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${details}&location=${location}`, '_blank');
   };
 
+  const handleScrollToReservation = () => {
+    const el = document.getElementById('reservation');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+  
+  const handleCancelSelection = () => {
+    setSelectedTreatment(DEFAULT_TREATMENT);
+    setIsStickyVisible(false);
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }} 
@@ -485,8 +520,8 @@ const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }
       exit={{ opacity: 0 }}
       className="pt-32"
     >
-      {/* MENU SECTION - Added stickyTop prop to align with header padding */}
-      <Section label="MENU" className="!border-t-0" id="treatment-menu" stickyTop="top-24">
+      {/* MENU SECTION - Used stickyTop="top-20" and labelClassName="py-4" to exactly match h3 category headers alignment */}
+      <Section label="MENU" className="!border-t-0" id="treatment-menu" stickyTop="top-20" labelClassName="py-4">
         <div className="mb-10">
           <h2 className="text-3xl font-light tracking-tight mb-8">Treatment Menu</h2>
           {/* Reverted to non-scrollable, wrapping layout as requested */}
@@ -512,7 +547,7 @@ const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }
         <div className="space-y-16 mt-8 md:mt-0">
           {filteredCategories.map((category) => (
             <div key={category.id}>
-              {/* UPDATED: Changed from md:top-24 to md:top-20 to align text with MENU label and stick to header */}
+              {/* Category headers stick to header with top-20 and padding-y-4 */}
               <h3 className="sticky top-20 md:top-20 z-10 bg-white py-4 mb-6 text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-gray-400">
                 {category.name}
               </h3>
@@ -524,7 +559,7 @@ const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }
                     onMouseLeave={() => setHoveredCase(null)}
                     onClick={() => {
                       setSelectedTreatment(service);
-                      onSelection(service.name); // Trigger toast
+                      setIsStickyVisible(true); // Show sticky bar on explicit selection
                     }}
                     className="group relative border-b border-gray-100 py-5 cursor-pointer hover:bg-gray-50/50 transition-colors"
                   >
@@ -562,7 +597,7 @@ const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }
           {!booked ? (
             <div className="space-y-12">
               <div className="space-y-4">
-                 <label className="text-[10px] uppercase tracking-widest text-gray-400 block border-b border-gray-100 pb-2">01. Select Procedure</label>
+                 <label className="text-[10px] uppercase tracking-widest text-black block border-b border-gray-100 pb-2">01. Select Procedure</label>
                  {selectedTreatment ? (
                    <div className="flex items-center justify-between bg-gray-50 p-6 border border-gray-100">
                      <div>
@@ -601,7 +636,7 @@ const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }
               </div>
 
               <div className="space-y-4">
-                 <label className="text-[10px] uppercase tracking-widest text-gray-400 block border-b border-gray-100 pb-2">02. Select Date</label>
+                 <label className="text-[10px] uppercase tracking-widest text-black block border-b border-gray-100 pb-2">02. Select Date</label>
                  <div className="flex gap-3 overflow-x-auto pb-4 hide-scrollbar">
                    {dates.map((d, i) => (
                      <button
@@ -621,7 +656,7 @@ const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }
               </div>
 
               <div className="space-y-4">
-                 <label className="text-[10px] uppercase tracking-widest text-gray-400 block border-b border-gray-100 pb-2">03. Select Time</label>
+                 <label className="text-[10px] uppercase tracking-widest text-black block border-b border-gray-100 pb-2">03. Select Time</label>
                  <div className="flex flex-wrap gap-3">
                    {TIME_SLOTS.map((t, i) => (
                      <button
@@ -642,7 +677,7 @@ const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }
               </div>
 
               <div className="space-y-4">
-                 <label className="text-[10px] uppercase tracking-widest text-gray-400 block border-b border-gray-100 pb-2">04. Your Details</label>
+                 <label className="text-[10px] uppercase tracking-widest text-black block border-b border-gray-100 pb-2">04. Your Details</label>
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                    <input 
                      type="text" 
@@ -735,6 +770,15 @@ const ServicesView = ({ preSelected, onSelection, showToast, onChangeTreatment }
           )}
         </div>
       </Section>
+      <AnimatePresence>
+        {selectedTreatment && isStickyVisible && !booked && (
+          <StickyBookingBar 
+            treatment={selectedTreatment} 
+            onProceed={handleScrollToReservation}
+            onCancel={handleCancelSelection}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
@@ -797,7 +841,7 @@ const Footer = ({ onFooterBook, hideBookingCTA }) => {
             <div className="mt-12 md:mt-16 flex justify-between items-end">
               <div className="text-[10px] uppercase tracking-widest text-gray-400 flex gap-6">
                 <a href="#" className="hover:text-black flex items-center gap-1">Instagram <ArrowUpRight size={10} /></a>
-                <a href="#" className="hover:text-black flex items-center gap-1">Maps <ArrowUpRight size={10} /></a>
+                <a href="https://maps.app.goo.gl/Zxbojq3ZQUtLEzvw5" target="_blank" rel="noopener noreferrer" className="hover:text-black flex items-center gap-1">Maps <ArrowUpRight size={10} /></a>
               </div>
               <div className="text-[10px] text-gray-300">
                 © 2025 FACE & FIGURE
@@ -808,7 +852,7 @@ const Footer = ({ onFooterBook, hideBookingCTA }) => {
         
         <div className="mt-16 h-64 w-full bg-gray-50 grayscale opacity-50 hover:opacity-100 transition-opacity duration-500">
           <iframe 
-           src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d1463.59875534544!2d35.38602081895211!3d33.57937154361176!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2slb!4v1763846166044!5m2!1sen!2slb" 
+           src="https://maps.google.com/maps?q=City%20Medical%20Center%2C%20East%20Blvd%2C%20Saida%2C%20Lebanon&t=&z=17&ie=UTF8&iwloc=&output=embed" 
            width="100%" 
            height="100%" 
            style={{ border: 0 }} 
@@ -827,15 +871,6 @@ const Footer = ({ onFooterBook, hideBookingCTA }) => {
 const App = () => {
   const [view, setView] = useState('home'); 
   const [preSelected, setPreSelected] = useState(null);
-  const [toast, setToast] = useState(null);
-
-  // Auto-hide toast after 3 seconds
-  useEffect(() => {
-    if (toast) {
-      const timer = setTimeout(() => setToast(null), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [toast]);
 
   // Logic for Footer "Book Appointment" - Always Top
   const handleFooterBook = () => {
@@ -862,10 +897,6 @@ const App = () => {
       window.scrollTo(0, 0);
   }
 
-  const handleSelection = (name) => {
-    setToast(`${name} selected`);
-  };
-
   return (
     <div className="min-h-screen bg-white text-black selection:bg-black selection:text-white antialiased">
       <GlobalStyles />
@@ -883,7 +914,6 @@ const App = () => {
              <ServicesView 
                key="services" 
                preSelected={preSelected} 
-               onSelection={handleSelection}
                onChangeTreatment={handleScrollToTop}
              />
           )}
@@ -892,9 +922,6 @@ const App = () => {
 
       <Footer onFooterBook={handleFooterBook} hideBookingCTA={view === 'services'} />
       
-      <AnimatePresence>
-        {toast && <Toast message={toast} onClose={() => setToast(null)} />}
-      </AnimatePresence>
     </div>
   );
 };
